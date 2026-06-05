@@ -3,4 +3,5 @@ backend/uploads/
 .env
 backend/.env
 .DS_Store
-.expo/
+.expo/Decani-app/
+Project-Decani/
