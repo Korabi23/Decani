@@ -1,61 +1,80 @@
 const express = require("express");
 const CityPicture = require("../models/CityPicture");
 const { requireAdmin } = require("../middleware/auth");
-const upload = require("../middleware/awsUpload");
-const { deleteFromS3 } = require("../services/s3Service");
+const { uploadCityPictures } = require("../middleware/cityPicturesUpload");
 
 const router = express.Router();
 
-// Rruga finale do të jetë: /api/admin/
-router.post("/", requireAdmin, upload.single("image"), async (req, res, next) => {
+router.get("/city-pictures", requireAdmin, async (req, res, next) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "Image is required" });
-
-    const created = await CityPicture.create({
-      image: req.file.location, 
-      description: String(req.body.description || ""),
-      author: String(req.body.author || ""),
-    });
-
-    res.status(201).json(created);
-  } catch (e) { next(e); }
+    const list = await CityPicture.find().sort({ createdAt: -1 });
+    res.json(list);
+  } catch (e) {
+    next(e);
+  }
 });
 
-router.put("/:id", requireAdmin, upload.single("image"), async (req, res, next) => {
-  try {
-    const existing = await CityPicture.findById(req.params.id);
-    if (!existing) return res.status(404).json({ message: "Not found" });
-
-    const patch = {
-      description: String(req.body.description || ""),
-      author: String(req.body.author || ""),
-    };
-
-    if (req.file) {
-      if (existing.image && existing.image.includes(".com/")) {
-        const oldKey = existing.image.split(".com/")[1];
-        await deleteFromS3(oldKey);
+router.post(
+  "/city-pictures",
+  requireAdmin,
+  uploadCityPictures.single("image"),
+  async (req, res, next) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Image is required" });
       }
-      patch.image = req.file.location;
+
+      const imagePath = `/uploads/city-pictures/${req.file.filename}`;
+
+      const created = await CityPicture.create({
+        image: imagePath,
+        description: String(req.body.description || ""),
+        author: String(req.body.author || ""),
+      });
+
+      res.status(201).json(created);
+    } catch (e) {
+      next(e);
     }
+  }
+);
 
-    const updated = await CityPicture.findByIdAndUpdate(req.params.id, patch, { new: true });
-    res.json(updated);
-  } catch (e) { next(e); }
-});
+router.put(
+  "/city-pictures/:id",
+  requireAdmin,
+  uploadCityPictures.single("image"),
+  async (req, res, next) => {
+    try {
+      const patch = {
+        description: String(req.body.description || ""),
+        author: String(req.body.author || ""),
+      };
 
-router.delete("/:id", requireAdmin, async (req, res, next) => {
+      if (req.file) {
+        patch.image = `/uploads/city-pictures/${req.file.filename}`;
+      }
+
+      const updated = await CityPicture.findByIdAndUpdate(req.params.id, patch, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updated) return res.status(404).json({ message: "Not found" });
+      res.json(updated);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+router.delete("/city-pictures/:id", requireAdmin, async (req, res, next) => {
   try {
     const deleted = await CityPicture.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Not found" });
-
-    if (deleted.image && deleted.image.includes(".com/")) {
-      const key = deleted.image.split(".com/")[1];
-      await deleteFromS3(key);
-    }
-
     res.json({ message: "Deleted ✅" });
-  } catch (e) { next(e); }
+  } catch (e) {
+    next(e);
+  }
 });
 
 module.exports = router;
