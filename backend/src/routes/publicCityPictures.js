@@ -3,7 +3,8 @@ const CityPicture = require("../models/CityPicture");
 
 const router = express.Router();
 
-router.get("/city-pictures", async (req, res, next) => {
+// Rruga finale do të jetë: /api/public/ (meqenëse app.js e ka prefiksin)
+router.get("/", async (req, res, next) => {
   try {
     const list = await CityPicture.find().sort({ createdAt: -1 });
     res.json(list);
@@ -12,7 +13,7 @@ router.get("/city-pictures", async (req, res, next) => {
   }
 });
 
-router.get("/city-pictures/:id", async (req, res, next) => {
+router.get("/:id", async (req, res, next) => {
   try {
     const item = await CityPicture.findByIdAndUpdate(
       req.params.id,
@@ -26,7 +27,7 @@ router.get("/city-pictures/:id", async (req, res, next) => {
   }
 });
 
-router.post("/city-pictures/:id/like", async (req, res, next) => {
+router.post("/:id/like", async (req, res, next) => {
   try {
     const item = await CityPicture.findByIdAndUpdate(
       req.params.id,
