@@ -41,45 +41,45 @@ app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan("dev"));
 
-// Statike (për dosjen lokale 'uploads' - nëse përdoret ende për diçka tjetër)
+// Statike
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
 // Health Check
 app.get("/health", (req, res) => res.json({ ok: true }));
 app.get("/", (req, res) => res.send("Deçani API running ✅"));
 
-// Lidhja e rrugëve (Routes)
+// Lidhja e rrugëve me prefikse unike (KËTU ËSHTË NDRYSHIMI)
 app.use("/api/auth", authRoutes);
-app.use("/api/public", publicRoutes);
+app.use("/api/public", publicRoutes); // Për gjeneralet
 app.use("/api/admin", adminRoutes);
 
-app.use("/api/public", publicBusinesses);
-app.use("/api/admin", adminBusinesses);
+app.use("/api/businesses/public", publicBusinesses);
+app.use("/api/businesses/admin", adminBusinesses);
 
-app.use("/api/public", publicCityPictures);
-app.use("/api/admin", adminCityPictures);
+app.use("/api/citypictures/public", publicCityPictures);
+app.use("/api/citypictures/admin", adminCityPictures);
 
-app.use("/api/public", publicFaunaVideos);
-app.use("/api/admin", adminFaunaVideos);
+app.use("/api/fauna/public", publicFaunaVideos);
+app.use("/api/fauna/admin", adminFaunaVideos);
 
-app.use("/api/public", publicCamping);
-app.use("/api/admin", adminCamping);
+app.use("/api/camping/public", publicCamping);
+app.use("/api/camping/admin", adminCamping);
 
-app.use("/api/public", publicMountains);
-app.use("/api/admin", adminMountains);
+app.use("/api/mountains/public", publicMountains);
+app.use("/api/mountains/admin", adminMountains);
 
-app.use("/api/public", publicHikingRoutes);
-app.use("/api/public", publicTouristPhotos);
-app.use("/api/public", publicRestaurants);
-app.use("/api/public", publicWaters);
+app.use("/api/hiking", publicHikingRoutes);
+app.use("/api/tourist-photos", publicTouristPhotos);
+app.use("/api/restaurants", publicRestaurants);
+app.use("/api/waters", publicWaters);
 
-app.use("/api/public", publicCars);
-app.use("/api/admin", adminCars);
+app.use("/api/cars/public", publicCars);
+app.use("/api/cars/admin", adminCars);
 
 // Middleware për rrugët që nuk ekzistojnë
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 
-// Error Handler (duhet të jetë gjithmonë i fundit)
+// Error Handler
 app.use(errorHandler);
 
 module.exports = app;
