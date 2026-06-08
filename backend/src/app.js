@@ -152,8 +152,11 @@ app.use("/api/public/city-pictures", publicCityPictures);
 app.use("/api/admin/city-pictures", adminCityPictures);
 
 
-app.use("/api/public", publicFaunaVideos);
-app.use("/api/admin", adminFaunaVideos);
+//app.use("/api/public", publicFaunaVideos);
+//app.use("/api/admin", adminFaunaVideos);
+
+app.use("/api/public/fauna", publicFaunaVideos);
+app.use("/api/admin/fauna", adminFaunaVideos);
 
 app.use("/api/public", publicCamping);
 app.use("/api/admin", adminCamping);
@@ -171,8 +174,7 @@ app.use("/api/public", publicWaters);
 
 app.use("/api/public/restaurants", publicRestaurants);
 app.use("/api/admin/restaurants", adminRestaurants);
-//app.use("/api/public/restaurants", publicRestaurants);
-//app.use("/api/admin/restaurants", adminRestaurants);
+
 
 //app.use("/api/public", publicCars);
 //app.use("/api/admin", adminCars);

@@ -1,4 +1,4 @@
-const multer = require("multer");
+/*const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
@@ -27,4 +27,4 @@ const uploadFaunaVideo = multer({
   limits: { fileSize: 60 * 1024 * 1024, files: 1 }, // 60MB (ndrysho sipas nevojes)
 });
 
-module.exports = { uploadFaunaVideo };
+module.exports = { uploadFaunaVideo };*/
