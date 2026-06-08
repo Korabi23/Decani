@@ -161,8 +161,10 @@ app.use("/api/public", publicTouristPhotos);
 app.use("/api/public", publicRestaurants);
 app.use("/api/public", publicWaters);
 
-app.use("/api/public", publicCars);
-app.use("/api/admin", adminCars);
+//app.use("/api/public", publicCars);
+//app.use("/api/admin", adminCars);
+app.use("/api/public/cars", publicCars);
+app.use("/api/admin/cars", adminCars);
 
 // Middleware për rrugët që nuk ekzistojnë
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));

@@ -1,4 +1,4 @@
-const multer = require("multer");
+/*const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
@@ -30,4 +30,4 @@ const uploadCars = multer({
   limits: { fileSize: 8 * 1024 * 1024, files: 1 },
 });
 
-module.exports = { uploadCars };
+module.exports = { uploadCars };*/
