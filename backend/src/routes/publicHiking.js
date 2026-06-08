@@ -3,7 +3,7 @@ const Hiking = require("../models/Hiking");
 
 const router = express.Router();
 
-router.get("/hiking", async (_req, res) => {
+router.get("/", async (_req, res) => {
   try {
     const list = await Hiking.find().sort({ createdAt: -1 }).lean();
     res.json(list);
@@ -13,7 +13,7 @@ router.get("/hiking", async (_req, res) => {
   }
 });
 
-router.get("/hiking/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const item = await Hiking.findById(req.params.id).lean();
     if (!item) return res.status(404).json({ message: "Not found" });

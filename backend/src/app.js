@@ -112,7 +112,9 @@ const adminCamping = require("./routes/adminCamping");
 const publicMountains = require("./routes/publicMountains");
 const adminMountains = require("./routes/adminMountains");
 
+const adminHiking = require("./routes/adminHiking");
 const publicHikingRoutes = require("./routes/publicHiking");
+
 const publicTouristPhotos = require("./routes/publicTouristPhotos");
 
 const publicWaters = require("./routes/publicWaters");
@@ -159,7 +161,10 @@ app.use("/api/admin", adminCamping);
 app.use("/api/public", publicMountains);
 app.use("/api/admin", adminMountains);
 
-app.use("/api/public", publicHikingRoutes);
+
+app.use("/api/public/hiking", publicHikingRoutes);
+app.use("/api/admin/hiking", adminHiking);
+
 app.use("/api/public", publicTouristPhotos);
 app.use("/api/public", publicWaters);
 
