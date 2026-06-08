@@ -153,11 +153,11 @@ app.use("/api/public/city-pictures", publicCityPictures);
 app.use("/api/admin/city-pictures", adminCityPictures);
 
 
-//app.use("/api/public", publicFaunaVideos);
-//app.use("/api/admin", adminFaunaVideos);
+app.use("/api/public", publicFaunaVideos);
+app.use("/api/admin", adminFaunaVideos);
 
-app.use("/api/public/fauna", publicFaunaVideos);
-app.use("/api/admin/fauna", adminFaunaVideos);
+//app.use("/api/public/fauna", publicFaunaVideos);
+//app.use("/api/admin/fauna", adminFaunaVideos);
 
 
 
