@@ -106,6 +106,7 @@ const adminCityPictures = require("./routes/adminCityPictures");
 const publicFaunaVideos = require("./routes/publicFaunaVideos");
 const adminFaunaVideos = require("./routes/adminFaunaVideos");
 
+
 const publicCamping = require("./routes/publicCamping");
 const adminCamping = require("./routes/adminCamping");
 
@@ -157,6 +158,8 @@ app.use("/api/admin/city-pictures", adminCityPictures);
 
 app.use("/api/public/fauna", publicFaunaVideos);
 app.use("/api/admin/fauna", adminFaunaVideos);
+
+
 
 app.use("/api/public", publicCamping);
 app.use("/api/admin", adminCamping);
