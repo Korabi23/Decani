@@ -3,7 +3,8 @@ const Car = require("../models/Car");
 
 const router = express.Router();
 
-router.get("/cars", async (req, res, next) => {
+// Tani rruga këtu është "/" që në bashkim me app.js bëhet: /api/public/cars/
+router.get("/", async (req, res, next) => {
   try {
     const list = await Car.find().sort({ createdAt: -1 });
     res.json(list);
@@ -12,8 +13,8 @@ router.get("/cars", async (req, res, next) => {
   }
 });
 
-
-router.get("/cars/:id", async (req, res, next) => {
+// Rruga këtu është "/:id" që bëhet: /api/public/cars/:id
+router.get("/:id", async (req, res, next) => {
   try {
     const item = await Car.findByIdAndUpdate(
       req.params.id,
@@ -29,7 +30,8 @@ router.get("/cars/:id", async (req, res, next) => {
   }
 });
 
-router.post("/cars/:id/like", async (req, res, next) => {
+// Rruga këtu është "/:id/like" që bëhet: /api/public/cars/:id/like
+router.post("/:id/like", async (req, res, next) => {
   try {
     const item = await Car.findByIdAndUpdate(
       req.params.id,
