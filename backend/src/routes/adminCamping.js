@@ -12,17 +12,14 @@ const normalizeNumber = (v, fallback = 0) => {
 
 const toPath = (filename) => `/uploads/camping/${filename}`;
 
-router.get("/camping", requireAdmin, async (req, res, next) => {
+router.get("/", requireAdmin, async (req, res, next) => {
   try {
     const list = await Camping.find().sort({ createdAt: -1 });
     res.json(list);
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 });
 
-
-router.post("/camping", requireAdmin, campingFields, async (req, res, next) => {
+router.post("/", requireAdmin, campingFields, async (req, res, next) => {
   try {
     const cover = req.files?.coverImage?.[0]?.filename || "";
     const gallery = (req.files?.images || []).map((f) => f.filename);
@@ -40,23 +37,16 @@ router.post("/camping", requireAdmin, campingFields, async (req, res, next) => {
       reviews: normalizeNumber(req.body.reviews, 0),
       phone: String(req.body.phone || ""),
       whatsapp: String(req.body.whatsapp || ""),
-
       coverImage: cover ? toPath(cover) : "",
       images: gallery.map(toPath),
     });
 
-    if (!created.name) {
-      return res.status(400).json({ message: "Name is required" });
-    }
-
+    if (!created.name) return res.status(400).json({ message: "Name is required" });
     res.status(201).json(created);
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 });
 
-
-router.put("/camping/:id", requireAdmin, campingFields, async (req, res, next) => {
+router.put("/:id", requireAdmin, campingFields, async (req, res, next) => {
   try {
     const patch = {
       name: String(req.body.name || "").trim(),
@@ -86,19 +76,15 @@ router.put("/camping/:id", requireAdmin, campingFields, async (req, res, next) =
 
     if (!updated) return res.status(404).json({ message: "Not found" });
     res.json(updated);
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 });
 
-router.delete("/camping/:id", requireAdmin, async (req, res, next) => {
+router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
     const deleted = await Camping.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Not found" });
     res.json({ message: "Deleted ✅" });
-  } catch (e) {
-    next(e);
-  }
+  } catch (e) { next(e); }
 });
 
 module.exports = router;

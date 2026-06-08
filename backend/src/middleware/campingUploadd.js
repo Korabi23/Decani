@@ -1,4 +1,4 @@
-// src/middleware/campingUpload.js
+/*src/middleware/campingUpload.js
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -38,4 +38,4 @@ const campingFields = uploadCamping.fields([
   { name: "images", maxCount: 6 },
 ]);
 
-module.exports = { campingFields };
+module.exports = { campingFields };*/
