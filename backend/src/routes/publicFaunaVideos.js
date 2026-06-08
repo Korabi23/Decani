@@ -3,6 +3,7 @@ const FaunaVideo = require("../models/FaunaVideo");
 
 const router = express.Router();
 
+// Në vend të "/fauna-videos", shkruaj "/"
 router.get("/", async (req, res, next) => {
   try {
     const list = await FaunaVideo.find().sort({ createdAt: -1 });
@@ -10,6 +11,7 @@ router.get("/", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// Në vend të "/fauna-videos/:id", shkruaj "/:id"
 router.get("/:id", async (req, res, next) => {
   try {
     const item = await FaunaVideo.findByIdAndUpdate(
@@ -22,6 +24,7 @@ router.get("/:id", async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// Në vend të "/fauna-videos/:id/like", shkruaj "/:id/like"
 router.post("/:id/like", async (req, res, next) => {
   try {
     const item = await FaunaVideo.findByIdAndUpdate(
