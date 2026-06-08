@@ -1,22 +1,11 @@
 const express = require("express");
-const multer = require("multer");
-const path = require("path");
 const Camping = require("../models/Camping");
 const { requireAdmin } = require("../middleware/auth");
+const upload = require("../middleware/awsUpload"); // Përdor middleware-in tënd të S3
+const { deleteFromS3 } = require("../services/s3Service");
 const router = express.Router();
 
-// Konfigurimi i Multer për ruajtjen e fotove
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Sigurohu që folderi 'uploads' ekziston në root
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  }
-});
-const upload = multer({ storage: storage });
-
-// Rruga GET
+// GET: Lista e kampeve
 router.get("/", requireAdmin, async (req, res, next) => {
   try {
     const list = await Camping.find().sort({ createdAt: -1 });
@@ -24,7 +13,7 @@ router.get("/", requireAdmin, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-// Rruga POST - Tani pranon foto (coverImage dhe images)
+// POST: Shto kamp të ri me foto në S3
 router.post("/", requireAdmin, upload.fields([
   { name: 'coverImage', maxCount: 1 }, 
   { name: 'images', maxCount: 6 }
@@ -32,14 +21,10 @@ router.post("/", requireAdmin, upload.fields([
   try {
     const data = { ...req.body };
 
-    // Nëse ka foto, ruajmë rrugën (path) e tyre në bazën e të dhënave
+    // Marrja e linkeve nga S3 (req.files është objekt sepse përdorim fields)
     if (req.files) {
-      if (req.files.coverImage) {
-        data.coverImage = `/uploads/${req.files.coverImage[0].filename}`;
-      }
-      if (req.files.images) {
-        data.images = req.files.images.map(f => `/uploads/${f.filename}`);
-      }
+      if (req.files.coverImage) data.coverImage = req.files.coverImage[0].location;
+      if (req.files.images) data.images = req.files.images.map(f => f.location);
     }
 
     const created = await Camping.create({
@@ -52,7 +37,7 @@ router.post("/", requireAdmin, upload.fields([
   } catch (e) { next(e); }
 });
 
-// Rruga PUT
+// PUT: Përditëso kampin (me mundësi ngarkimi fotosh të reja)
 router.put("/:id", requireAdmin, upload.fields([
   { name: 'coverImage', maxCount: 1 }, 
   { name: 'images', maxCount: 6 }
@@ -60,8 +45,8 @@ router.put("/:id", requireAdmin, upload.fields([
   try {
     const data = { ...req.body };
     if (req.files) {
-      if (req.files.coverImage) data.coverImage = `/uploads/${req.files.coverImage[0].filename}`;
-      if (req.files.images) data.images = req.files.images.map(f => `/uploads/${f.filename}`);
+      if (req.files.coverImage) data.coverImage = req.files.coverImage[0].location;
+      if (req.files.images) data.images = req.files.images.map(f => f.location);
     }
     
     const updated = await Camping.findByIdAndUpdate(req.params.id, data, { new: true });
@@ -70,11 +55,26 @@ router.put("/:id", requireAdmin, upload.fields([
   } catch (e) { next(e); }
 });
 
-// Rruga DELETE
+// DELETE: Fshi kampin dhe fotot nga S3
 router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
-    const deleted = await Camping.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Not found" });
+    const item = await Camping.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ message: "Not found" });
+
+    // Fshirja e fotos kryesore nga S3
+    if (item.coverImage) {
+      const key = item.coverImage.split(".com/")[1];
+      await deleteFromS3(key);
+    }
+
+    // Fshirja e galerisë nga S3
+    if (item.images && item.images.length > 0) {
+      for (const url of item.images) {
+        const key = url.split(".com/")[1];
+        await deleteFromS3(key);
+      }
+    }
+
     res.json({ message: "Deleted ✅" });
   } catch (e) { next(e); }
 });
