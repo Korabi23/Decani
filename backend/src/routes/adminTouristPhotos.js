@@ -1,12 +1,12 @@
 const express = require("express");
-const TouristPhoto = require("../../models/TouristPhoto");
-const { requireAdmin } = require("../../middleware/auth");
-const upload = require("../../middleware/awsUpload"); 
-const { deleteFromS3 } = require("../../services/s3Service");
+const TouristPhoto = require("../models/TouristPhoto"); // Rruga e saktë (një nivel lart)
+const { requireAdmin } = require("../middleware/auth");
+const upload = require("../middleware/awsUpload"); 
+const { deleteFromS3 } = require("../services/s3Service");
 
 const router = express.Router();
 
-// GET: Lista e fotove për admin
+// GET: Lista e fotove
 router.get("/", requireAdmin, async (req, res, next) => {
   try {
     const list = await TouristPhoto.find().sort({ createdAt: -1 });
@@ -14,33 +14,36 @@ router.get("/", requireAdmin, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
-// POST: Shto foto të re (me AWS S3)
-router.post("/", requireAdmin, upload.single("image"), async (req, res, next) => {
+// POST: Shto foto (pranon shumë foto në fushën 'photos')
+router.post("/", requireAdmin, upload.array("photos", 10), async (req, res, next) => {
   try {
-    const imageUrl = req.file ? req.file.location : null;
+    // Marrja e listës së fotove nga AWS
+    const photos = req.files ? req.files.map((f) => f.location) : [];
     
-    if (!imageUrl) {
-      return res.status(400).json({ message: "Fotoja është e domosdoshme" });
+    if (photos.length === 0) {
+      return res.status(400).json({ message: "Së paku një foto është e domosdoshme" });
     }
 
     const created = await TouristPhoto.create({
       ...req.body,
-      image: imageUrl
+      photos: photos // Ruhet si array në MongoDB
     });
     res.status(201).json(created);
   } catch (e) { next(e); }
 });
 
-// DELETE: Fshi foton dhe pastro nga S3
+// DELETE: Fshi fotot nga S3 dhe nga DB
 router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
     const item = await TouristPhoto.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ message: "Not found" });
 
-    // Fshi nga S3
-    if (item.image) {
-      const key = item.image.split(".com/")[1];
-      await deleteFromS3(key);
+    // Fshi çdo foto nga S3
+    if (item.photos && item.photos.length > 0) {
+      for (const url of item.photos) {
+        const key = url.split(".com/")[1];
+        if (key) await deleteFromS3(key);
+      }
     }
     
     res.json({ message: "Deleted ✅" });

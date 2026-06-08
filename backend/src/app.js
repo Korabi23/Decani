@@ -116,8 +116,8 @@ const adminMountains = require("./routes/adminMountains");
 const adminHiking = require("./routes/adminHiking");
 const publicHikingRoutes = require("./routes/publicHiking");
 
-const publicTouristPhotos = require("./routes/publicTouristPhotos"); // (ose vendndodhja që ke)
-const adminTouristPhotosRoutes = require("./routes/admin/touristPhotos");
+const publicTouristPhotos = require("./routes/publicTouristPhotos");
+const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
 
 
 
