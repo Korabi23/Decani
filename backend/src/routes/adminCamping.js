@@ -1,15 +1,9 @@
 const express = require("express");
 const Camping = require("../models/Camping");
 const { requireAdmin } = require("../middleware/auth");
-
 const router = express.Router();
 
-const normalizeNumber = (v, fallback = 0) => {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : fallback;
-};
-
-// Këtu përdorim "/" sepse prefiksi është definuar në app.js si /api/admin/camping
+// Rruga është /api/admin/camping (në app.js), pra këtu përdorim "/"
 router.get("/", requireAdmin, async (req, res, next) => {
   try {
     const list = await Camping.find().sort({ createdAt: -1 });
@@ -19,54 +13,21 @@ router.get("/", requireAdmin, async (req, res, next) => {
 
 router.post("/", requireAdmin, async (req, res, next) => {
   try {
+    // Presim JSON nga trupi i kërkesës (nuk ka më req.files)
     const created = await Camping.create({
-      name: String(req.body.name || "").trim(),
-      location: String(req.body.location || ""),
-      mountain: String(req.body.mountain || ""),
-      price: normalizeNumber(req.body.price, 0),
-      surface: String(req.body.surface || ""),
-      capacity: String(req.body.capacity || ""),
-      rooms: String(req.body.rooms || ""),
-      coordinates: String(req.body.coordinates || ""),
-      rating: normalizeNumber(req.body.rating, 0),
-      reviews: normalizeNumber(req.body.reviews, 0),
-      phone: String(req.body.phone || ""),
-      whatsapp: String(req.body.whatsapp || ""),
-      // Presim URL-të direkt nga AWS (vijnë nga req.body)
-      coverImage: req.body.coverImage || "",
-      images: req.body.images || [], 
+      ...req.body,
+      // Sigurohemi që numrat janë korrekt
+      price: Number(req.body.price) || 0,
+      rating: Number(req.body.rating) || 0,
+      reviews: Number(req.body.reviews) || 0
     });
-
-    if (!created.name) return res.status(400).json({ message: "Name is required" });
     res.status(201).json(created);
   } catch (e) { next(e); }
 });
 
 router.put("/:id", requireAdmin, async (req, res, next) => {
   try {
-    const patch = {
-      name: String(req.body.name || "").trim(),
-      location: String(req.body.location || ""),
-      mountain: String(req.body.mountain || ""),
-      price: normalizeNumber(req.body.price, 0),
-      surface: String(req.body.surface || ""),
-      capacity: String(req.body.capacity || ""),
-      rooms: String(req.body.rooms || ""),
-      coordinates: String(req.body.coordinates || ""),
-      rating: normalizeNumber(req.body.rating, 0),
-      reviews: normalizeNumber(req.body.reviews, 0),
-      phone: String(req.body.phone || ""),
-      whatsapp: String(req.body.whatsapp || ""),
-      // Përditësojmë URL-të nëse janë dërguar
-      ...(req.body.coverImage && { coverImage: req.body.coverImage }),
-      ...(req.body.images && { images: req.body.images }),
-    };
-
-    const updated = await Camping.findByIdAndUpdate(req.params.id, patch, {
-      new: true,
-      runValidators: true,
-    });
-
+    const updated = await Camping.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updated) return res.status(404).json({ message: "Not found" });
     res.json(updated);
   } catch (e) { next(e); }
