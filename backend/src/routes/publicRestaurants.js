@@ -2,8 +2,7 @@ const express = require("express");
 const Restaurant = require("../models/Restaurant");
 
 const router = express.Router();
-
-router.get("/restaurants", async (_req, res) => {
+router.get("/", async (req, res) => {
   try {
     const list = await Restaurant.find().sort({ createdAt: -1 }).lean();
     res.json(list);
@@ -13,7 +12,7 @@ router.get("/restaurants", async (_req, res) => {
   }
 });
 
-router.get("/restaurants/:id", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const item = await Restaurant.findById(req.params.id).lean();
     if (!item) return res.status(404).json({ message: "Not found" });
