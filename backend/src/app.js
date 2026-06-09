@@ -116,6 +116,9 @@ const adminMountains = require("./routes/adminMountains");
 const adminHiking = require("./routes/adminHiking");
 const publicHikingRoutes = require("./routes/publicHiking");
 
+const publicProperties = require("./routes/publicProperties");
+const adminProperties = require("./routes/adminProperties");
+
 //const publicTouristPhotos = require("./routes/publicTouristPhotos");
 //const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
 
@@ -164,6 +167,9 @@ app.use("/api/admin/city-pictures", adminCityPictures);
 
 app.use("/api/public/fauna", publicFaunaVideos);
 app.use("/api/admin/fauna", adminFaunaVideos);
+
+app.use("/api/public/properties", publicProperties);
+app.use("/api/admin/properties", adminProperties);
 
 
 

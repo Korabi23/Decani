@@ -1,5 +1,5 @@
 // src/middleware/uploadPropertyImages.js
-const path = require("path");
+/*const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -26,4 +26,4 @@ const uploadPropertyImages = multer({
   limits: { fileSize: 6 * 1024 * 1024, files: 10 },
 });
 
-module.exports = { uploadPropertyImages };
+module.exports = { uploadPropertyImages };*/
