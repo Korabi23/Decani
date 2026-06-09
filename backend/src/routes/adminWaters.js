@@ -17,7 +17,9 @@ router.post("/", requireAdmin, upload.array("photos", 5), async (req, res, next)
   try {
     const photos = req.files ? req.files.map(f => f.location) : [];
     
-    // Ruajmë si 'photos' (jo 'images')
+    // SHTO KËTË LOG PËR TË PARË ÇFARË PO RUHET NË DB
+    console.log("Fotot e upload-uara në S3:", photos);
+    
     const created = await Water.create({
       ...req.body,
       photos: photos 
