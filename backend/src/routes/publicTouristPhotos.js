@@ -1,26 +1,29 @@
-// publicTouristPhotos.js
 const express = require("express");
-const TouristPhoto = require("../models/TouristPhoto");
+const Water = require("../models/Water");
+
 const router = express.Router();
 
-// Ndrysho nga "/tourist-photos" në "/"
+// Tani rruga është thjesht "/", sepse në app.js e ke definuar:
+// app.use("/api/public/waters", publicWaters);
 router.get("/", async (_req, res) => {
   try {
-    const list = await TouristPhoto.find().sort({ createdAt: -1 }).lean();
+    const list = await Water.find().sort({ createdAt: -1 }).lean();
     res.json(list);
   } catch (e) {
-    res.status(500).json({ message: e?.message || "Server error" });
+    console.error("❌ Gabim te GET /api/public/waters:", e);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-// Ndrysho nga "/tourist-photos/:id" në "/:id"
+// Rruga për marrjen e një elementi specifik është "/:id"
 router.get("/:id", async (req, res) => {
   try {
-    const item = await TouristPhoto.findById(req.params.id).lean();
+    const item = await Water.findById(req.params.id).lean();
     if (!item) return res.status(404).json({ message: "Not found" });
     res.json(item);
   } catch (e) {
-    res.status(500).json({ message: e?.message || "Server error" });
+    console.error(`❌ Gabim te GET /api/public/waters/${req.params.id}:`, e);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

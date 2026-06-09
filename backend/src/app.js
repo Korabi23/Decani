@@ -190,8 +190,7 @@ app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
 //app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
 
 app.use("/api/admin/waters", adminWaters);
-app.use("/api/public", publicWaters);
-
+app.use("/api/public/waters", publicWaters); // <--- SHTO "/waters" KËTU
 
 app.use("/api/public/restaurants", publicRestaurants);
 app.use("/api/admin/restaurants", adminRestaurants);
