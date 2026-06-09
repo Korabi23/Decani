@@ -1,7 +1,7 @@
 const express = require("express");
 const Water = require("../models/Water");
 const { requireAdmin } = require("../middleware/auth");
-const upload = require("../middleware/awsUpload"); // Sigurohu që e ke këtë middleware
+const upload = require("../middleware/awsUpload"); 
 const { deleteFromS3 } = require("../services/s3Service");
 
 const router = express.Router();
