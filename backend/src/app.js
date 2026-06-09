@@ -119,9 +119,6 @@ const publicHikingRoutes = require("./routes/publicHiking");
 const publicProperties = require("./routes/publicProperties");
 const adminProperties = require("./routes/adminProperties");
 
-//const publicTouristPhotos = require("./routes/publicTouristPhotos");
-//const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
-
 const publicTouristPhotos = require("./routes/publicTouristPhotos");
 const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
 
