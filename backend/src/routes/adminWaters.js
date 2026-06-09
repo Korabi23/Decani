@@ -13,18 +13,16 @@ router.get("/", requireAdmin, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// adminWaters.js
+
+// Kur shton ujë të ri:
 router.post("/", requireAdmin, upload.array("photos", 5), async (req, res, next) => {
   try {
     const photos = req.files ? req.files.map(f => f.location) : [];
-    
-    // SHTO KËTË LOG PËR TË PARË ÇFARË PO RUHET NË DB
-    console.log("Fotot e upload-uara në S3:", photos);
-    
     const created = await Water.create({
       ...req.body,
-      photos: photos 
+      images: photos // Këtu duhet të jetë "images" që të përputhet me frontend-in
     });
-    
     res.status(201).json(created);
   } catch (e) { next(e); }
 });
@@ -44,17 +42,13 @@ router.delete("/:id", requireAdmin, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// Kur bën update (PATCH):
 router.patch("/:id", requireAdmin, upload.array("photos", 5), async (req, res, next) => {
   try {
-    const existing = await Water.findById(req.params.id);
-    if (!existing) return res.status(404).json({ message: "Not found" });
-
     const updateData = { ...req.body };
-    // Nëse ka foto të reja, përdori ato
     if (req.files && req.files.length > 0) {
-      updateData.photos = req.files.map(f => f.location);
+      updateData.images = req.files.map(f => f.location); // Përditëso fushën "images"
     }
-
     const updated = await Water.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.json(updated);
   } catch (e) { next(e); }
