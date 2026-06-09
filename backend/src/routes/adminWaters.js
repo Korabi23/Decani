@@ -60,4 +60,26 @@ router.delete("/:id", requireAdmin, async (req, res, next) => {
   } catch (e) { next(e); }
 });
 
+// PATCH: Përditëso ujë ekzistues
+router.patch("/:id", requireAdmin, upload.array("photos", 5), async (req, res, next) => {
+  try {
+    const existing = await Water.findById(req.params.id);
+    if (!existing) return res.status(404).json({ message: "Not found" });
+
+    // Nëse ka foto të reja, shto-i, përndryshe mbaj ato që ishin
+    let updatedPhotos = existing.photos || [];
+    if (req.files && req.files.length > 0) {
+      updatedPhotos = req.files.map(f => f.location);
+      // Opsionale: Fshi fotot e vjetra nga S3 këtu nëse do që të mos mbushet S3
+    }
+
+    const updated = await Water.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, photos: updatedPhotos },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (e) { next(e); }
+});
+
 module.exports = router;
