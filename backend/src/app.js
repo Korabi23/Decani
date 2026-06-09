@@ -124,6 +124,7 @@ const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
 
 
 const publicWaters = require("./routes/publicWaters");
+const adminWaters = require("./routes/adminWaters"); // Importimi
 
 const publicRestaurants = require("./routes/publicRestaurants");
 const adminRestaurants = require("./routes/adminRestaurants");
@@ -188,6 +189,7 @@ app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
 //app.use("/api/public/tourist-photos", publicTouristPhotos);
 //app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
 
+app.use("/api/admin/waters", adminWaters);
 app.use("/api/public", publicWaters);
 
 

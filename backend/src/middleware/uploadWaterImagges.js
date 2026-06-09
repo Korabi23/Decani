@@ -1,4 +1,4 @@
-const path = require("path");
+/*const path = require("path");
 const multer = require("multer");
 const fs = require("fs");
 
@@ -21,4 +21,4 @@ const uploadWaterImages = multer({
   limits: { fileSize: 15 * 1024 * 1024, files: 10 },
 });
 
-module.exports = { uploadWaterImages };
+module.exports = { uploadWaterImages };*/
