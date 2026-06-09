@@ -116,9 +116,11 @@ const adminMountains = require("./routes/adminMountains");
 const adminHiking = require("./routes/adminHiking");
 const publicHikingRoutes = require("./routes/publicHiking");
 
+//const publicTouristPhotos = require("./routes/publicTouristPhotos");
+//const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
+
 const publicTouristPhotos = require("./routes/publicTouristPhotos");
 const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
-
 
 
 const publicWaters = require("./routes/publicWaters");
@@ -178,8 +180,13 @@ app.use("/api/admin", adminMountains);
 app.use("/api/public/hiking", publicHikingRoutes);
 app.use("/api/admin/hiking", adminHiking);
 
+
+// Gjej këto rreshta në app.js dhe sigurohu që janë kështu:
 app.use("/api/public/tourist-photos", publicTouristPhotos);
 app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
+
+//app.use("/api/public/tourist-photos", publicTouristPhotos);
+//app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
 
 app.use("/api/public", publicWaters);
 
