@@ -25,10 +25,10 @@ router.post("/", requireAdmin, upload.array("photos", 5), async (req, res, next)
     const files = req.files || [];
     const photos = files.map(f => f.location);
 
-    const created = await Water.create({
-      ...req.body,
-      photos: photos
-    });
+   const created = await Water.create({
+  ...req.body,
+  images: photos // Ndrysho "photos" në "images" këtu
+});
     
     res.status(201).json(created);
   } catch (e) { 
