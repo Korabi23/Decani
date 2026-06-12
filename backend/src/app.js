@@ -137,6 +137,10 @@ const adminJobs = require("./routes/adminJobs");
 
 const adminSubmissionsRoutes = require("./routes/adminSubmissions"); // Sigurohu që emri i skedarit përputhet
 
+// Importo rrugët në fillim
+const publicSponsors = require("./routes/publicSponsors");
+const adminSponsors = require("./routes/adminSponsors");
+
 const app = express();
 
 // Middleware bazë
@@ -213,6 +217,9 @@ app.use("/api/admin/restaurants", adminRestaurants);
 //app.use("/api/admin", adminCars);
 app.use("/api/public/cars", publicCars);
 app.use("/api/admin/cars", adminCars);
+
+app.use("/api/public/sponsors", publicSponsors);
+app.use("/api/admin/sponsors", adminSponsors);
 
 // Middleware për rrugët që nuk ekzistojnë
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
