@@ -133,4 +133,213 @@ router.post("/city-pictures", requireAdmin, upload.single("image"), async (req, 
   }
 });
 
+router.get("/job-applications", requireAdmin, async (req, res, next) => {
+  try {
+    const apps = await JobApplication.find()
+      .populate("jobId")
+      .sort({ createdAt: -1 });
+
+    res.json(apps);
+  } catch (e) {
+    next(e);
+  }
+});
+
+
+router.patch("/job-applications/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    const allowed = ["pending", "reviewed", "accepted", "rejected"];
+
+    if (!allowed.includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    const updated = await JobApplication.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    ).populate("jobId");
+
+    if (!updated) return res.status(404).json({ message: "Not found" });
+
+    res.json(updated);
+  } catch (e) {
+    next(e);
+  }
+});
+
+
+router.post("/seed-jobs", requireAdmin, async (req, res, next) => {
+  try {
+    const jobsToSeed = [
+      {
+        title: "Senior Frontend Developer",
+        company: "TechCorp Solutions",
+        location: "Prishtinë",
+        type: "Full-time",
+        salary: "€45,000 - €60,000",
+        description:
+          "Join our dynamic team to build cutting-edge web applications using React and modern technologies.",
+        requirements: ["React", "JavaScript/TypeScript", "REST APIs"],
+        perks: ["Remote option", "Training", "Competitive salary"],
+      },
+      {
+        title: "Marketing Specialist",
+        company: "Creative Agency Pro",
+        location: "Prishtinë",
+        type: "Part-time",
+        salary: "€25,000 - €35,000",
+        description:
+          "Drive brand awareness and lead generation through innovative digital marketing campaigns.",
+        requirements: ["Social media", "Content strategy", "Analytics"],
+        perks: ["Flexible hours", "Growth opportunities"],
+      },
+      {
+        title: "UX/UI Designer",
+        company: "Design Studio Alpha",
+        location: "Prishtinë",
+        type: "Full-time",
+        salary: "€40,000 - €55,000",
+        description:
+          "Create beautiful and intuitive user experiences for mobile and web applications.",
+        requirements: ["Figma", "UX research", "Prototyping"],
+        perks: ["Creative team", "Modern tools"],
+      },
+      {
+        title: "Data Analyst",
+        company: "Analytics Hub",
+        location: "Prishtinë",
+        type: "Part-time",
+        salary: "€30,000 - €42,000",
+        description:
+          "Transform complex data into actionable insights to drive business decisions and growth.",
+        requirements: ["Excel/Sheets", "SQL basics", "Reporting"],
+        perks: ["Flexible schedule", "Learning budget"],
+      },
+      {
+        title: "Project Manager",
+        company: "Innovation Labs",
+        location: "Prishtinë",
+        type: "Full-time",
+        salary: "€50,000 - €70,000",
+        description:
+          "Lead cross-functional teams to deliver high-impact projects on time and within budget.",
+        requirements: ["Communication", "Planning", "Leadership"],
+        perks: ["Bonus", "Career growth"],
+      },
+      {
+        title: "Punëtor Ndërtimi",
+        company: "Decani Construction",
+        location: "Deçan",
+        type: "Full-time",
+        salary: "Sipas marrëveshjes",
+        description: "Kërkojmë punëtorë për projekte ndërtimi.",
+        requirements: ["Përvojë e preferuar", "Përgjegjës", "Puntor"],
+        perks: ["Transport", "Pagë e rregullt"],
+      },
+      {
+        title: "Asistent Administrativ",
+        company: "Komuna",
+        location: "Deçan",
+        type: "Full-time",
+        salary: "500€",
+        description: "Përkrahje administrative për zyrë.",
+        requirements: ["MS Office", "Komunikim i mirë"],
+        perks: ["Kontratë", "Trajnim"],
+      },
+    ];
+
+    const existing = await Job.find({}, { title: 1, company: 1 }).lean();
+    const existingSet = new Set(existing.map((j) => `${j.title}__${j.company}`));
+
+    const toInsert = jobsToSeed.filter(
+      (j) => !existingSet.has(`${j.title}__${j.company}`)
+    );
+
+    if (toInsert.length === 0) {
+      return res.json({ message: "Nothing new to seed ✅" });
+    }
+
+    await Job.insertMany(toInsert);
+
+    return res.json({ message: `Seeded ${toInsert.length} new jobs ✅` });
+  } catch (e) {
+    next(e);
+  }
+});
+
+
+router.get("/jobs", requireAdmin, async (req, res, next) => {
+  try {
+    const jobs = await Job.find().sort({ createdAt: -1 });
+    res.json(jobs);
+  } catch (e) {
+    next(e);
+  }
+});
+
+
+router.post("/jobs", requireAdmin, async (req, res, next) => {
+  try {
+    const {
+      title,
+      company,
+      location,
+      type,
+      salary,
+      description,
+      requirements = [],
+      perks = [],
+      faqs = [],
+    } = req.body;
+
+    if (!title || !company) {
+      return res.status(400).json({ message: "title and company are required" });
+    }
+
+    const created = await Job.create({
+      title,
+      company,
+      location,
+      type,
+      salary,
+      description,
+      requirements,
+      perks,
+      faqs,
+    });
+
+    res.status(201).json(created);
+  } catch (e) {
+    next(e);
+  }
+});
+
+router.patch("/jobs/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const updated = await Job.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updated) return res.status(404).json({ message: "Not found" });
+
+    res.json(updated);
+  } catch (e) {
+    next(e);
+  }
+});
+
+
+router.delete("/jobs/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const deleted = await Job.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ message: "Not found" });
+    res.json({ message: "Deleted ✅" });
+  } catch (e) {
+    next(e);
+  }
+});
+
 module.exports = router;

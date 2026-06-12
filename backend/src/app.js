@@ -132,6 +132,11 @@ const adminRestaurants = require("./routes/adminRestaurants");
 const publicCars = require("./routes/publicCars");
 const adminCars = require("./routes/adminCars");
 
+const publicJobs = require("./routes/publicJobs");
+const adminJobs = require("./routes/adminJobs");
+
+const adminSubmissionsRoutes = require("./routes/adminSubmissions"); // Sigurohu që emri i skedarit përputhet
+
 const app = express();
 
 // Middleware bazë
@@ -154,6 +159,11 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/public", publicBusinesses);
 app.use("/api/admin", adminBusinesses);
 
+
+app.use("/api/public/jobs", publicJobs);
+app.use("/api/admin/jobs", adminJobs);
+
+app.use("/api/admin", adminSubmissionsRoutes);
 
 app.use("/api/public/city-pictures", publicCityPictures);
 app.use("/api/admin/city-pictures", adminCityPictures);
