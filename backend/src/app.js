@@ -145,6 +145,10 @@ const adminSponsors = require("./routes/adminSponsors");
 const publicVideoAds = require("./routes/publicVideoAds");
 const adminVideoAds = require("./routes/adminVideoAds");
 
+const publicHospitals = require("./routes/publicHospitals");
+const adminHospitals = require("./routes/adminHospitals");
+
+
 const app = express();
 
 // Middleware bazë
@@ -227,6 +231,11 @@ app.use("/api/admin/sponsors", adminSponsors);
 
 app.use("/api/public/video-ads", publicVideoAds);
 app.use("/api/admin/video-ads", adminVideoAds);
+
+app.use("/api/public/hospitals", publicHospitals);
+app.use("/api/admin/hospitals", adminHospitals);
+
+
 
 // Middleware për rrugët që nuk ekzistojnë
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
