@@ -97,6 +97,9 @@ const authRoutes = require("./routes/auth");
 const publicRoutes = require("./routes/public");
 const adminRoutes = require("./routes/admin");
 
+const publicProjects = require("./routes/publicProjects");
+const adminProjects = require("./routes/adminProjects");
+
 const publicBusinesses = require("./routes/publicBusinesses");
 const adminBusinesses = require("./routes/adminBusinesses");
 
@@ -167,6 +170,9 @@ app.get("/", (req, res) => res.send("Deçani API running ✅"));
 app.use("/api/auth", authRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
+
+app.use("/api/public/projects", publicProjects);
+app.use("/api/admin/projects", adminProjects);
 
 app.use("/api/public", publicBusinesses);
 app.use("/api/admin", adminBusinesses);
