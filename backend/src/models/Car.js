@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const CarSchema = new mongoose.Schema(
   {
-    image: { type: String, required: true },
+    images: { type: [String], required: true }, // Array për shumë foto
     description: { type: String, default: "" },
     author: { type: String, default: "" },
     likes: { type: Number, default: 0 },

@@ -16,13 +16,18 @@ router.get("/", requireAdmin, async (req, res, next) => {
   }
 });
 
-// 2. POST: Shto makinë me foto në S3
-router.post("/", requireAdmin, upload.single("image"), async (req, res, next) => {
+// 2. POST: Shto makinë me shumë foto në S3
+router.post("/", requireAdmin, upload.array("images", 10), async (req, res, next) => {
   try {
-    if (!req.file) return res.status(400).json({ message: "Image is required" });
+    // Marrja e listës së fotove të ngarkuara në S3
+    const uploadedImages = req.files ? req.files.map((f) => f.location) : [];
+
+    if (uploadedImages.length === 0) {
+      return res.status(400).json({ message: "Së paku një foto është e domosdoshme" });
+    }
 
     const item = await Car.create({
-      image: req.file.location, // URL-ja nga S3
+      images: uploadedImages, // Ruhet si array në MongoDB (Sigurohu që modeli Car e ka fushën 'images')
       description: String(req.body.description || ""),
       author: String(req.body.author || ""),
     });
@@ -31,8 +36,8 @@ router.post("/", requireAdmin, upload.single("image"), async (req, res, next) =>
   } catch (e) { next(e); }
 });
 
-// 3. PATCH (ose PUT): Përditëso makinën dhe fshi foton e vjetër nga S3
-router.patch("/:id", requireAdmin, upload.single("image"), async (req, res, next) => {
+// 3. PATCH (ose PUT): Përditëso makinën dhe fshi fotot e vjetra nga S3
+router.patch("/:id", requireAdmin, upload.array("images", 10), async (req, res, next) => {
   try {
     const existing = await Car.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: "Not found" });
@@ -42,13 +47,17 @@ router.patch("/:id", requireAdmin, upload.single("image"), async (req, res, next
       author: req.body.author || existing.author,
     };
 
-    if (req.file) {
-      // Fshi foton e vjetër nga S3
-      if (existing.image && existing.image.includes(".com/")) {
-        const oldKey = existing.image.split(".com/")[1];
-        await deleteFromS3(oldKey);
+    // Nëse admini ka përzgjedhur foto të reja, i zëvendësojmë ato
+    if (req.files && req.files.length > 0) {
+      // Fshijmë të gjitha fotot e vjetra ekzistuese nga S3
+      if (existing.images && existing.images.length > 0) {
+        for (const url of existing.images) {
+          const oldKey = url.split(".com/")[1];
+          if (oldKey) await deleteFromS3(oldKey);
+        }
       }
-      update.image = req.file.location;
+      // Vendosim URL-të e fotove të reja
+      update.images = req.files.map((f) => f.location);
     }
 
     const item = await Car.findByIdAndUpdate(req.params.id, update, { new: true });
@@ -56,16 +65,18 @@ router.patch("/:id", requireAdmin, upload.single("image"), async (req, res, next
   } catch (e) { next(e); }
 });
 
-// 4. DELETE: Fshi makinën dhe foton nga S3
+// 4. DELETE: Fshi makinën dhe të gjitha fotot nga S3
 router.delete("/:id", requireAdmin, async (req, res, next) => {
   try {
     const item = await Car.findByIdAndDelete(req.params.id);
     if (!item) return res.status(404).json({ message: "Not found" });
 
-    // Fshi foton nga S3
-    if (item.image && item.image.includes(".com/")) {
-      const key = item.image.split(".com/")[1];
-      await deleteFromS3(key);
+    // Fshi të gjitha fotot e lidhura me këtë makinë nga S3
+    if (item.images && item.images.length > 0) {
+      for (const url of item.images) {
+        const key = url.split(".com/")[1];
+        if (key) await deleteFromS3(key);
+      }
     }
 
     res.json({ message: "Deleted ✅" });
