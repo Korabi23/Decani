@@ -1,5 +1,5 @@
 const express = require("express");
-const Water = require("../models/Water");
+const Water = require("../models/TouristPhoto");
 
 const router = express.Router();
 
