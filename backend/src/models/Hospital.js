@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const HospitalSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  type: { type: String, enum: ["Publik", "Privat", "Specializuar"], default: "Publik" },
+  type: { type: String, enum: ["Publik", "Privat", "Dentistë", "Ortopedi", "Barnatore"], default: "Publik" },
   location: { type: String, default: "" },
   schedule: { type: String, default: "" },
   beds: { type: Number, default: 0 },
