@@ -48,41 +48,7 @@ router.delete("/:id", requireAdmin, async (req, res, next) => {
     
     res.json({ message: "Deleted ✅" });
   } catch (e) { next(e); }
-
-  // PATCH: Edito destinacionin ekzistues dhe menaxho fotot
-router.patch("/:id", requireAdmin, upload.array("photos", 10), async (req, res, next) => {
-  try {
-    const { title, location, description, type, keepPhotos } = req.body;
-    
-    // 1. Merr fotot e reja nëse ka ngarkuar admini
-    let newPhotos = req.files ? req.files.map((f) => f.location) : [];
-    
-    // 2. Merr fotot e vjetra që admini zgjodhi t'i mbajë (KEEP)
-    let existingPhotos = [];
-    if (keepPhotos) {
-      existingPhotos = JSON.parse(keepPhotos);
-    }
-    
-    // 3. Bashko fotot e vjetra me ato të rejat
-    const finalPhotos = [...existingPhotos, ...newPhotos];
-
-    if (finalPhotos.length === 0) {
-      return res.status(400).json({ message: "Së paku një foto është e domosdoshme" });
-    }
-
-    const updated = await TouristPhoto.findByIdAndUpdate(
-      req.params.id,
-      { title, location, description, type, photos: finalPhotos },
-      { new: true }
-    );
-
-    if (!updated) return res.status(404).json({ message: "Destinacioni nuk u gjet" });
-    
-    res.json(updated);
-  } catch (e) { 
-    next(e); 
-  }
-});
+  
 });
 
 module.exports = router;

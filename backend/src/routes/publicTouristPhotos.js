@@ -1,5 +1,6 @@
 const express = require("express");
-const TouristPhoto = require("../models/TouristPhoto"); // Ndryshon modeli këtu
+const Water = require("../models/Water");
+
 const router = express.Router();
 
 // Tani rruga është thjesht "/", sepse në app.js e ke definuar:
