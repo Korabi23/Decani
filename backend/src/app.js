@@ -109,7 +109,6 @@ const adminCityPictures = require("./routes/adminCityPictures");
 const publicFaunaVideos = require("./routes/publicFaunaVideos");
 const adminFaunaVideos = require("./routes/adminFaunaVideos");
 
-
 const publicCamping = require("./routes/publicCamping");
 const adminCamping = require("./routes/adminCamping");
 
@@ -125,9 +124,8 @@ const adminProperties = require("./routes/adminProperties");
 const publicTouristPhotos = require("./routes/publicTouristPhotos");
 const adminTouristPhotosRoutes = require("./routes/adminTouristPhotos");
 
-
 const publicWaters = require("./routes/publicWaters");
-const adminWaters = require("./routes/adminWaters"); // Importimi
+const adminWaters = require("./routes/adminWaters");
 
 const publicRestaurants = require("./routes/publicRestaurants");
 const adminRestaurants = require("./routes/adminRestaurants");
@@ -138,19 +136,16 @@ const adminCars = require("./routes/adminCars");
 const publicJobs = require("./routes/publicJobs");
 const adminJobs = require("./routes/adminJobs");
 
-const adminSubmissionsRoutes = require("./routes/adminSubmissions"); // Sigurohu që emri i skedarit përputhet
+const adminSubmissionsRoutes = require("./routes/adminSubmissions");
 
-// Importo rrugët në fillim
 const publicSponsors = require("./routes/publicSponsors");
 const adminSponsors = require("./routes/adminSponsors");
 
-// Importo në pjesën e sipërme:
 const publicVideoAds = require("./routes/publicVideoAds");
 const adminVideoAds = require("./routes/adminVideoAds");
 
 const publicHospitals = require("./routes/publicHospitals");
 const adminHospitals = require("./routes/adminHospitals");
-
 
 const app = express();
 
@@ -159,8 +154,14 @@ app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 app.use(morgan("dev"));
 
-// Statike (për dosjen lokale 'uploads' - nëse përdoret ende për diçka tjetër)
+// Statike (për dosjen lokale 'uploads')
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
+
+// --- KËTU ËSHTË RUTA PËR PRIVACY POLICY ---
+app.get("/privacy", (req, res) => {
+  res.sendFile(path.join(__dirname, "privacy.html"));
+});
+// ------------------------------------------
 
 // Health Check
 app.get("/health", (req, res) => res.json({ ok: true }));
@@ -177,7 +178,6 @@ app.use("/api/admin/projects", adminProjects);
 app.use("/api/public", publicBusinesses);
 app.use("/api/admin", adminBusinesses);
 
-
 app.use("/api/public/jobs", publicJobs);
 app.use("/api/admin/jobs", adminJobs);
 
@@ -186,49 +186,30 @@ app.use("/api/admin", adminSubmissionsRoutes);
 app.use("/api/public/city-pictures", publicCityPictures);
 app.use("/api/admin/city-pictures", adminCityPictures);
 
-
-//app.use("/api/public", publicFaunaVideos);
-//app.use("/api/admin", adminFaunaVideos);
-
 app.use("/api/public/fauna", publicFaunaVideos);
 app.use("/api/admin/fauna", adminFaunaVideos);
 
 app.use("/api/public/properties", publicProperties);
 app.use("/api/admin/properties", adminProperties);
 
-
-
-//app.use("/api/public", publicCamping);
-//app.use("/api/admin", adminCamping);
-
 app.use("/api/public/camping", publicCamping);
 app.use("/api/admin/camping", adminCamping);
-
 
 app.use("/api/public", publicMountains);
 app.use("/api/admin", adminMountains);
 
-
 app.use("/api/public/hiking", publicHikingRoutes);
 app.use("/api/admin/hiking", adminHiking);
 
-
-// Gjej këto rreshta në app.js dhe sigurohu që janë kështu:
 app.use("/api/public/tourist-photos", publicTouristPhotos);
 app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
 
-//app.use("/api/public/tourist-photos", publicTouristPhotos);
-//app.use("/api/admin/tourist-photos", adminTouristPhotosRoutes);
-
 app.use("/api/admin/waters", adminWaters);
-app.use("/api/public/waters", publicWaters); // <--- SHTO "/waters" KËTU
+app.use("/api/public/waters", publicWaters);
 
 app.use("/api/public/restaurants", publicRestaurants);
 app.use("/api/admin/restaurants", adminRestaurants);
 
-
-//app.use("/api/public", publicCars);
-//app.use("/api/admin", adminCars);
 app.use("/api/public/cars", publicCars);
 app.use("/api/admin/cars", adminCars);
 
@@ -241,12 +222,10 @@ app.use("/api/admin/video-ads", adminVideoAds);
 app.use("/api/public/hospitals", publicHospitals);
 app.use("/api/admin/hospitals", adminHospitals);
 
-
-
 // Middleware për rrugët që nuk ekzistojnë
 app.use((req, res) => res.status(404).json({ message: "Route not found" }));
 
-// Error Handler (duhet të jetë gjithmonë i fundit)
+// Error Handler
 app.use(errorHandler);
 
 module.exports = app;
